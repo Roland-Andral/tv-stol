@@ -1,27 +1,75 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>TV STOL</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      overflow: hidden;
+<meta charset="UTF-8">
+<title>TV STOL</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+    }
+    #message {
+        font-size: 60px;
+        text-align: center;
+        margin-top: 20vh;
+        padding: 20px;
     }
     iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+        width: 100vw;
+        height: 100vh;
+        border: none;
     }
-  </style>
+</style>
 </head>
 <body>
-  <!-- L’iframe charge directement la Web App Apps Script -->
-  <iframe src="https://script.google.com/macros/s/AKfycby2OHuX9ay0QK5hkWmhi-C5bJazCLXuUjKgcIsT_icGP2VxCpbocP_RcgL1qjDOr6NBgw/exec"></iframe>
+
+<div id="message"></div>
+<div id="container"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxMDhy5zzsjEJ2XO6PDXVHGALbbaAYOHTKwNVb934A5eSB6NTYSgIjoBWBdt32TDXGn0w/exec";
+
+async function updateDisplay() {
+    try {
+        let response = await fetch(API_URL);
+        let data = await response.json();
+
+        const container = document.getElementById("container");
+        const messageDiv = document.getElementById("message");
+
+        container.innerHTML = "";
+        messageDiv.innerHTML = "";
+
+        if (data.type === "message") {
+            messageDiv.innerHTML = data.value;
+        }
+
+        if (data.type === "url") {
+            container.innerHTML = `<iframe src="${data.value}"></iframe>`;
+        }
+
+        if (data.type === "youtube") {
+            container.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${data.value}?autoplay=1"
+                    allow="autoplay"
+                ></iframe>`;
+        }
+
+    } catch (e) {
+        console.log("Erreur TV :", e);
+    }
+}
+
+// Mise à jour toutes les 5 secondes
+setInterval(updateDisplay, 5000);
+
+// Premier affichage
+updateDisplay();
+</script>
+
 </body>
 </html>
-
