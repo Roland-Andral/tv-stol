@@ -21,17 +21,16 @@
         const data = await resp.json();
         if(data.type==="message"){
           const val = data.value;
-          if(val !== currentUrl){
-            currentUrl = val;
+
+          // Toujours mettre à jour l'iframe, même si la valeur est identique
+          if(/^https?:\/\//i.test(val)){
             const container = document.getElementById("message");
             container.innerHTML = "";
-            if(/^https?:\/\//i.test(val)){
-              const iframe = document.createElement("iframe");
-              iframe.src = val + "?rand=" + new Date().getTime();
-              container.appendChild(iframe);
-            } else {
-              container.textContent = val;
-            }
+            const iframe = document.createElement("iframe");
+            iframe.src = val + "?rand=" + new Date().getTime(); // forcer reload
+            container.appendChild(iframe);
+          } else {
+            document.getElementById("message").textContent = val;
           }
         }
       } catch(err){
