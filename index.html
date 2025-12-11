@@ -13,7 +13,6 @@
   <div id="message">Bienvenue sur la TV STOL</div>
   <script>
     const URL_TV = "https://script.google.com/macros/s/AKfycbxMDhy5zzsjEJ2XO6PDXVHGALbbaAYOHTKwNVb934A5eSB6NTYSgIjoBWBdt32TDXGn0w/exec";
-    let currentUrl = "";
 
     async function majTV() {
       try {
@@ -21,16 +20,15 @@
         const data = await resp.json();
         if(data.type==="message"){
           const val = data.value;
+          const container = document.getElementById("message");
 
-          // Toujours mettre à jour l'iframe, même si la valeur est identique
           if(/^https?:\/\//i.test(val)){
-            const container = document.getElementById("message");
             container.innerHTML = "";
             const iframe = document.createElement("iframe");
-            iframe.src = val + "?rand=" + new Date().getTime(); // forcer reload
+            iframe.src = val + "?rand=" + new Date().getTime();
             container.appendChild(iframe);
           } else {
-            document.getElementById("message").textContent = val;
+            container.textContent = val;
           }
         }
       } catch(err){
