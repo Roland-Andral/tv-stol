@@ -11,6 +11,17 @@
       height: 100%;
       background: black;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #tv-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 50px;
+      text-align: center;
     }
     iframe {
       width: 100%;
@@ -20,7 +31,33 @@
   </style>
 </head>
 <body>
-  <!-- L’iframe charge directement la Web App Apps Script -->
-  <iframe src="https://script.google.com/macros/s/AKfycbzETiWv_Vy_GB_dkXZtKm9pkvcDl7uRIBj8ilzMMRkjWEczZlmOZ-5WRnlltC9DsDL9RA/exec"></iframe>
+  <div id="tv-container">Chargement...</div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzETiWv_Vy_GB_dkXZtKm9pkvcDl7uRIBj8ilzMMRkjWEczZlmOZ-5WRnlltC9DsDL9RA/exec";
+
+    async function updateTV() {
+      try {
+        const res = await fetch(WEB_APP_URL + "?cache=" + Date.now());
+        const data = await res.json();
+        const container = document.getElementById('tv-container');
+
+        if(data.type === 'message') {
+          container.innerHTML = data.value;
+        } else if(data.type === 'url') {
+          container.innerHTML = `<iframe src="${data.value}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        } else {
+          container.innerHTML = `<div style="color:red;">Type inconnu</div>`;
+        }
+      } catch(err) {
+        console.error(err);
+        document.getElementById('tv-container').innerHTML = `<div style="color:red;">Erreur: ${err}</div>`;
+      }
+    }
+
+    // Rafraîchissement toutes les 5 secondes pour suivre les mises à jour
+    setInterval(updateTV, 5000);
+    updateTV();
+  </script>
 </body>
 </html>
