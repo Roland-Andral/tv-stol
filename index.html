@@ -1,75 +1,48 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>TV STOL</title>
-<style>
+  <meta charset="UTF-8">
+  <title>TV STOL</title>
+  <style>
     body {
-        margin: 0;
-        background: black;
-        color: white;
-        font-family: Arial, sans-serif;
-        overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
     }
     #message {
-        font-size: 60px;
-        text-align: center;
-        margin-top: 20vh;
-        padding: 20px;
+      font-size: 48px;
+      line-height: 1.2;
     }
-    iframe {
-        width: 100vw;
-        height: 100vh;
-        border: none;
-    }
-</style>
+  </style>
 </head>
 <body>
+  <div id="message">Bienvenue sur la TV STOL</div>
 
-<div id="message"></div>
-<div id="container"></div>
+  <script>
+    // URL de la WebApp Apps Script (celle que tu as déployée)
+    const URL_TV = "https://script.google.com/macros/s/AKfycbxMDhy5zzsjEJ2XO6PDXVHGALbbaAYOHTKwNVb934A5eSB6NTYSgIjoBWBdt32TDXGn0w/exec";
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxMDhy5zzsjEJ2XO6PDXVHGALbbaAYOHTKwNVb934A5eSB6NTYSgIjoBWBdt32TDXGn0w/exec";
-
-async function updateDisplay() {
-    try {
-        let response = await fetch(API_URL);
-        let data = await response.json();
-
-        const container = document.getElementById("container");
-        const messageDiv = document.getElementById("message");
-
-        container.innerHTML = "";
-        messageDiv.innerHTML = "";
-
-        if (data.type === "message") {
-            messageDiv.innerHTML = data.value;
-        }
-
-        if (data.type === "url") {
-            container.innerHTML = `<iframe src="${data.value}"></iframe>`;
-        }
-
-        if (data.type === "youtube") {
-            container.innerHTML = `
-                <iframe 
-                    src="https://www.youtube.com/embed/${data.value}?autoplay=1"
-                    allow="autoplay"
-                ></iframe>`;
-        }
-
-    } catch (e) {
-        console.log("Erreur TV :", e);
+    async function majMessage() {
+      try {
+        const resp = await fetch(URL_TV);
+        const data = await resp.json();
+        document.getElementById("message").textContent = data.value;
+      } catch (err) {
+        console.error("Erreur fetch TV:", err);
+        document.getElementById("message").textContent = "Erreur récupération données";
+      }
     }
-}
 
-// Mise à jour toutes les 5 secondes
-setInterval(updateDisplay, 5000);
-
-// Premier affichage
-updateDisplay();
-</script>
-
+    // Rafraîchir toutes les 2 secondes
+    setInterval(majMessage, 2000);
+    // Premier affichage immédiat
+    majMessage();
+  </script>
 </body>
 </html>
