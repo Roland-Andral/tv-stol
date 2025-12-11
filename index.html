@@ -4,20 +4,27 @@
   <meta charset="UTF-8">
   <title>TV STOL</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
       background-color: black;
-      color: white;
+      overflow: hidden;
       font-family: sans-serif;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
+    }
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
     }
     #message {
       font-size: 48px;
-      line-height: 1.2;
+      text-align: center;
     }
   </style>
 </head>
@@ -25,24 +32,45 @@
   <div id="message">Bienvenue sur la TV STOL</div>
 
   <script>
-    // URL de la WebApp Apps Script (celle que tu as déployée)
+    // URL de ta WebApp Apps Script qui reçoit les messages depuis Google Sheets
     const URL_TV = "https://script.google.com/macros/s/AKfycbxMDhy5zzsjEJ2XO6PDXVHGALbbaAYOHTKwNVb934A5eSB6NTYSgIjoBWBdt32TDXGn0w/exec";
 
-    async function majMessage() {
+    let currentUrl = "";
+
+    async function majTV() {
       try {
         const resp = await fetch(URL_TV);
         const data = await resp.json();
-        document.getElementById("message").textContent = data.value;
-      } catch (err) {
+
+        if (data.type === "message") {
+          const val = data.value;
+
+          if (val !== currentUrl) {
+            currentUrl = val;
+            const container = document.getElementById("message");
+            container.innerHTML = "";
+
+            // Si c'est une URL (commence par http), on met un iframe
+            if (/^https?:\/\//i.test(val)) {
+              const iframe = document.createElement("iframe");
+              iframe.src = val;
+              container.appendChild(iframe);
+            } else {
+              // Sinon on affiche le texte
+              container.textContent = val;
+            }
+          }
+        }
+
+      } catch(err) {
         console.error("Erreur fetch TV:", err);
-        document.getElementById("message").textContent = "Erreur récupération données";
+        document.getElementById("message").textContent = "Erreur récupération TV";
       }
     }
 
     // Rafraîchir toutes les 2 secondes
-    setInterval(majMessage, 2000);
-    // Premier affichage immédiat
-    majMessage();
+    setInterval(majTV, 2000);
+    majTV();
   </script>
 </body>
 </html>
