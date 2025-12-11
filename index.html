@@ -53,7 +53,8 @@
     async function refreshDisplay() {
         try {
             // Chemin vers le fichier JSON dans ton GitHub Pages
-            const res = await fetch('display.json?cache=' + Date.now());
+            //const res = await fetch('display.json?cache=' + Date.now());
+            const res = await fetch('https://script.google.com/macros/s/AKfycbzYbwba5YIm1Ahh-9srA-9A8Mp3e-xuk-m3qfHgWqjyzF2jZxZNfgBQvgUBnvGWggymNA/exec?cache=' + Date.now());
             const data = await res.json();
 
             if (data.type === "url") {
@@ -94,3 +95,4 @@
 
 </body>
 </html>
+
