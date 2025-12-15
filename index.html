@@ -4,44 +4,74 @@
   <meta charset="UTF-8">
   <title>TV STOL</title>
   <style>
-    html, body { margin:0; padding:0; width:100%; height:100%; background:black; overflow:hidden; display:flex; justify-content:center; align-items:center; color:white; font-family:sans-serif; }
-    iframe { border:none; width:100%; height:100%; }
-    #message { font-size:48px; text-align:center; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: white;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      font-size: 5vw;
+      text-align: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <div id="message">Bienvenue sur la TV STOL</div>
-  <script>
-    const URL_TV = "https://script.google.com/macros/s/AKfycbxP6NsCyy5Ca5ncj-eQLyqxqrSS7XbkpbH3UOrNxDtpRD1eOfjHbMcDPeH8VOivBa-atg/exec";
 
-    async function majTV() {
-      try {
-        const resp = await fetch(URL_TV);
-        const data = await resp.json();
-        if(data.type==="message"){
-          const val = data.value;
-          const container = document.getElementById("message");
+<div id="content">Chargement…</div>
 
-          if(/^https?:\/\//i.test(val)){
-            container.innerHTML = "";
-            const iframe = document.createElement("iframe");
-            iframe.src = val + "?rand=" + new Date().getTime();
-            container.appendChild(iframe);
-          } else {
-            container.textContent = val;
-          }
-        }
-      } catch(err){
-        console.error("Erreur fetch TV:", err);
-        document.getElementById("message").textContent="Erreur récupération TV";
-      }
+<script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxP6NsCyy5Ca5ncj-eQLyqxqrSS7XbkpbH3UOrNxDtpRD1eOfjHbMcDPeH8VOivBa-atg/exec";
+
+async function refreshDisplay() {
+  try {
+    const response = await fetch(WEBAPP_URL + "?t=" + Date.now());
+    const data = await response.json();
+
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+
+    if (data.type === "message") {
+      content.textContent = data.value;
     }
 
-    setInterval(majTV, 2000);
-    majTV();
-  </script>
+    if (data.type === "youtube") {
+      const iframe = document.createElement("iframe");
+      iframe.src = data.value.replace("watch?v=", "embed/");
+      content.appendChild(iframe);
+    }
+
+    if (data.type === "sheet") {
+      const iframe = document.createElement("iframe");
+      iframe.src = data.value;
+      content.appendChild(iframe);
+    }
+
+  } catch (e) {
+    document.getElementById("content").textContent = "Erreur récupération TV";
+  }
+}
+
+// rafraîchissement toutes les 2 secondes
+setInterval(refreshDisplay, 2000);
+refreshDisplay();
+</script>
+
 </body>
 </html>
-
-
-
