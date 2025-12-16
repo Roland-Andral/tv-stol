@@ -1,55 +1,36 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>TV STOL</title>
-<style>
-  body {
-    background:black;
-    color:white;
-    font-family:Arial, sans-serif;
-    text-align:center;
-    margin:0;
-    padding:40px;
-  }
-</style>
-</head>
-<body>
-
-<h1 id="content">Chargement…</h1>
-
 <script>
-const SHEET_URL =
-  "https://docs.google.com/spreadsheets/d/1RAIdAw_wSAK7kyFPCYjGqX5bCzS1e2n3lTRf2Tkrz5k/gviz/tq?tqx=out:json&sheet=Affichage";
+const URL =
+ "https://docs.google.com/spreadsheets/d/1RAIdAw_wSAK7kyFPCYjGqX5bCzS1e2n3lTRf2Tkrz5k/gviz/tq?tqx=out:json&sheet=Affichage";
+
+let currentMode = "";
 
 function refresh() {
-  fetch(SHEET_URL)
+  fetch(URL)
     .then(r => r.text())
     .then(t => {
       const json = JSON.parse(t.substring(47).slice(0, -2));
-      const row = json.table.rows;
+      const rows = json.table.rows;
 
-      const mode = row[0].c[0]?.v || "MESSAGE";
+      const mode = rows[0].c[0]?.v || "MESSAGE";
 
-      let value = "";
-      if (mode === "MESSAGE") value = row[0].c[1]?.v || "";
-      if (mode === "YOUTUBE") value = row[1].c[1]?.v || "";
-      if (mode === "SLIDES")  value = row[2].c[1]?.v || "";
+      if (mode === currentMode) return;
+      currentMode = mode;
 
       if (mode === "MESSAGE") {
-        document.getElementById("content").innerText = value;
-      } else {
-        window.location.href = value;
+        document.body.innerHTML =
+          `<h1 style="color:white">${rows[0].c[1]?.v || ""}</h1>`;
       }
-    })
-    .catch(() => {
-      document.getElementById("content").innerText = "Erreur TV";
+
+      if (mode === "YOUTUBE") {
+        window.location.replace(rows[1].c[1]?.v);
+      }
+
+      if (mode === "SLIDES") {
+        window.location.replace(rows[2].c[1]?.v);
+      }
     });
 }
 
 refresh();
 setInterval(refresh, 2000);
 </script>
-
-</body>
-</html>
