@@ -2,81 +2,25 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Affichage Feuille Google Sheets</title>
-
-<!-- Google Visualization API -->
-<script src="https://www.gstatic.com/charts/loader.js"></script>
-
+<title>Affichage Google Sheets</title>
 <style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background: #ffffff;
-        font-family: Arial, sans-serif;
-    }
-
-    #table {
-        width: 100%;
-        height: 100%;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        border: 1px solid #ccc;
-        padding: 12px;
-        text-align: center;
-        font-size: 24px; /* adapté TV */
-    }
-
-    th {
-        background: #f0f0f0;
-        font-weight: bold;
-    }
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
 </style>
 </head>
-
 <body>
 
-<div id="table"></div>
-
-<script>
-google.charts.load('current', { packages: ['table'] });
-google.charts.setOnLoadCallback(loadData);
-
-function loadData() {
-    const query = new google.visualization.Query(
-        "https://docs.google.com/spreadsheets/d/1RAIdAw_wSAK7kyFPCYjGqX5bCzS1e2n3lTRf2Tkrz5k/gviz/tq?gid=1137124945"
-    );
-
-    query.send(response => {
-        if (response.isError()) {
-            document.getElementById('table').innerHTML =
-                "Erreur de chargement des données";
-            return;
-        }
-
-        const data = response.getDataTable();
-        const table = new google.visualization.Table(
-            document.getElementById('table')
-        );
-
-        table.draw(data, {
-            showRowNumber: false,
-            width: '100%',
-            height: '100%',
-            allowHtml: true
-        });
-    });
-}
-
-// Rafraîchissement automatique (toutes les 10 secondes)
-setInterval(loadData, 10000);
-</script>
+<iframe
+  src="https://docs.google.com/spreadsheets/d/e/ID_DE_PUBLICATION/pubhtml?gid=1137124945&single=true&widget=true&headers=false">
+</iframe>
 
 </body>
 </html>
